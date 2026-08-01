@@ -40,12 +40,22 @@ def download():
             'format': 'bestaudio/best',
             'outtmpl': output_template,
             'noplaylist': True,
+            'extractor_args': {
+                'youtube': {
+                    'player_client': ['android', 'ios']
+                }
+            }
         }
     else:
         ydl_opts = {
             'format': 'best[ext=mp4][height<=720]/best[ext=mp4]/best',
             'outtmpl': output_template,
             'noplaylist': True,
+            'extractor_args': {
+                'youtube': {
+                    'player_client': ['android', 'ios']
+                }
+            }
         }
 
     try:
