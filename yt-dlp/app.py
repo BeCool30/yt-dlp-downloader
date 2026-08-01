@@ -52,7 +52,8 @@ def download():
         }
     else:
         ydl_opts = {
-            'format': 'best[ext=mp4][height<=720]/best[ext=mp4]/best',
+            # Flexible format fallback that prevents format selection errors
+            'format': 'bestvideo[height<=720]+bestaudio/best[height<=720]/best',
             'outtmpl': output_template,
             'noplaylist': True,
             'cookiefile': cookie_path if os.path.exists(cookie_path) else None,
