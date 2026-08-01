@@ -52,8 +52,8 @@ def download():
         }
     else:
         ydl_opts = {
-            # Flexible format fallback that prevents format selection errors
-            'format': 'bestvideo[height<=720]+bestaudio/best[height<=720]/best',
+            # Single pre-merged format selection to avoid FFmpeg merge errors
+            'format': 'best',
             'outtmpl': output_template,
             'noplaylist': True,
             'cookiefile': cookie_path if os.path.exists(cookie_path) else None,
