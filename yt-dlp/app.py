@@ -73,10 +73,11 @@ def download():
     if cookie_file:
         ydl_opts['cookiefile'] = cookie_file
 
+    # Flexible format fallbacks to prevent "Requested format is not available"
     if download_type == 'audio':
-        ydl_opts['format'] = 'bestaudio/best'
+        ydl_opts['format'] = 'ba/bestaudio/b/best'
     else:
-        ydl_opts['format'] = 'best'
+        ydl_opts['format'] = 'bv*+ba/b/best'
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
