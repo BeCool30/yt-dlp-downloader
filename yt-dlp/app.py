@@ -1,7 +1,7 @@
 import os
 import glob
 import tempfile
-import static_ffmpeg  # Automatically handles FFmpeg binaries without apt-get
+import static_ffmpeg  # type: ignore
 from urllib.parse import quote, unquote
 from flask import Flask, render_template, request, send_file, jsonify  # type: ignore
 import yt_dlp  # type: ignore
@@ -14,6 +14,21 @@ app = Flask(__name__)
 # System temp directory works best on cloud containers like Render
 DOWNLOAD_FOLDER = os.path.join(tempfile.gettempdir(), 'yt_downloads')
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
+
+
+def get_cookie_path():
+    """Locate cookies.txt whether running locally or on Render."""
+    possible_paths = [
+        'cookies.txt',
+        '../cookies.txt',
+        os.path.join(os.getcwd(), 'cookies.txt'),
+        '/opt/render/project/src/cookies.txt',
+        '/opt/render/project/src/yt-dlp/cookies.txt'
+    ]
+    for path in possible_paths:
+        if os.path.exists(path) and os.path.getsize(path) > 0:
+            return path
+    return None
 
 
 @app.route('/')
@@ -39,33 +54,29 @@ def download():
     # Save format options
     output_template = os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s')
 
-    # Path to secret cookie file on Render
-    cookie_path = 'cookies.txt'
+    cookie_file = get_cookie_path()
+
+    # Base yt-dlp configuration
+    ydl_opts = {
+        'outtmpl': output_template,
+        'noplaylist': True,
+        'cachedir': False,
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['android', 'ios', 'web'],
+                'skip': ['hls', 'dash']
+            }
+        }
+    }
+
+    # Attach cookies if found
+    if cookie_file:
+        ydl_opts['cookiefile'] = cookie_file
 
     if download_type == 'audio':
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'outtmpl': output_template,
-            'noplaylist': True,
-            'cookiefile': cookie_path if os.path.exists(cookie_path) else None,
-            'extractor_args': {
-                'youtube': {
-                    'player_client': ['android', 'ios']
-                }
-            }
-        }
+        ydl_opts['format'] = 'bestaudio/best'
     else:
-        ydl_opts = {
-            'format': 'best',
-            'outtmpl': output_template,
-            'noplaylist': True,
-            'cookiefile': cookie_path if os.path.exists(cookie_path) else None,
-            'extractor_args': {
-                'youtube': {
-                    'player_client': ['android', 'ios']
-                }
-            }
-        }
+        ydl_opts['format'] = 'best'
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
