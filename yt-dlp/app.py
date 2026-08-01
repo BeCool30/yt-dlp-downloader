@@ -23,11 +23,14 @@ def get_cookie_path():
         '../cookies.txt',
         os.path.join(os.getcwd(), 'cookies.txt'),
         '/opt/render/project/src/cookies.txt',
-        '/opt/render/project/src/yt-dlp/cookies.txt'
+        '/opt/render/project/src/yt-dlp/cookies.txt',
+        '/etc/secrets/cookies.txt'  # Render Secret Files default mount location
     ]
     for path in possible_paths:
         if os.path.exists(path) and os.path.getsize(path) > 0:
+            print(f"--> [SUCCESS] Found cookies file at: {path}")
             return path
+    print("--> [WARNING] No valid cookies.txt file found!")
     return None
 
 
@@ -61,23 +64,21 @@ def download():
         'outtmpl': output_template,
         'noplaylist': True,
         'cachedir': False,
-        'check_formats': False,  # Bypasses strict format existence verification
+        'check_formats': False,
         'extractor_args': {
             'youtube': {
-                'player_client': ['android', 'ios', 'mweb', 'web_creator'],
+                'player_client': ['android', 'ios', 'mweb'],
                 'skip': ['hls', 'dash']
             }
         }
     }
 
-    # Attach cookies if found on Render
+    # Attach cookies if found
     if cookie_file:
         ydl_opts['cookiefile'] = cookie_file
 
-    # Flexible format selection
     if download_type == 'audio':
         ydl_opts['format'] = 'bestaudio/best'
-    # Omit explicit 'format' key for video so yt-dlp automatically grabs whatever YouTube delivers
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -101,7 +102,6 @@ def download():
 
 @app.route('/get-file')
 def get_file():
-    # Retrieve raw path query and decode special characters
     raw_path = request.args.get('path', '')
     filename = unquote(raw_path)
 
