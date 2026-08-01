@@ -1,9 +1,13 @@
 import os
 import glob
 import tempfile
+import static_ffmpeg  # Automatically handles FFmpeg binaries without apt-get
 from urllib.parse import quote, unquote
 from flask import Flask, render_template, request, send_file, jsonify  # type: ignore
 import yt_dlp  # type: ignore
+
+# Initialize FFmpeg binaries automatically
+static_ffmpeg.add_paths()
 
 app = Flask(__name__)
 
@@ -52,7 +56,6 @@ def download():
         }
     else:
         ydl_opts = {
-            # Single pre-merged format selection to avoid FFmpeg merge errors
             'format': 'best',
             'outtmpl': output_template,
             'noplaylist': True,
