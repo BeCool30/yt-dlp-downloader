@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+        h2 { margin-top: 0; color: #333; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover { background-color: #cc0000; }
+        button:disabled { background-color: #aa9999; cursor: not-allowed; }
+        .message { margin-top: 15px; text-align: center; font-weight: bold; min-height: 20px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: #0056b3; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Media Downloader</h2>
+    <form id="downloadForm">
+        <div class="form-group">
+            <label for="url">Video Link:</label>
+            <input type="text" id="url" name="url" placeholder="Paste YouTube link here..." required>
+        </div>
+        <div class="form-group">
+            <label for="type">Download Type:</label>
+            <select id="type" name="type">
+                <option value="video">Video (Best Quality)</option>
+                <option value="audio">Audio Only (Best Audio)</option>
+            </select>
+        </div>
+        <button type="submit" id="submitBtn">Download</button>
+    </form>
+
+    <div id="statusMessage" class="message"></div>
+</div>
+
+<script>
+document.getElementById('downloadForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const statusMsg = document.getElementById('statusMessage');
+    const formData = new FormData(this);
+
+    // Disable button & update status bar
+    submitBtn.disabled = true;
+    statusMsg.className = "message info";
+    statusMsg.innerText = "Processing & Downloading on Server... Please wait.";
+
+    try {
+        const response = await fetch('/download', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            statusMsg.className = "message success";
+            statusMsg.innerText = result.message;
+            // Trigger automatic file download in browser
+            window.location.href = result.file_url;
+        } else {
+            statusMsg.className = "message error";
+            statusMsg.innerText = result.message;
+        }
+    } catch (err) {
+        statusMsg.className = "message error";
+        statusMsg.innerText = "Server Error. Check terminal output.";
+    } finally {
+        submitBtn.disabled = false;
+    }
+});
+</script>
+
+</body>
+</html>
