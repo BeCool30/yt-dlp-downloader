@@ -35,11 +35,15 @@ def download():
     # Save format options
     output_template = os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s')
 
+    # Path to secret cookie file on Render
+    cookie_path = 'cookies.txt'
+
     if download_type == 'audio':
         ydl_opts = {
             'format': 'bestaudio/best',
             'outtmpl': output_template,
             'noplaylist': True,
+            'cookiefile': cookie_path if os.path.exists(cookie_path) else None,
             'extractor_args': {
                 'youtube': {
                     'player_client': ['android', 'ios']
@@ -51,6 +55,7 @@ def download():
             'format': 'best[ext=mp4][height<=720]/best[ext=mp4]/best',
             'outtmpl': output_template,
             'noplaylist': True,
+            'cookiefile': cookie_path if os.path.exists(cookie_path) else None,
             'extractor_args': {
                 'youtube': {
                     'player_client': ['android', 'ios']
