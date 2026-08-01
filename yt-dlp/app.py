@@ -56,28 +56,28 @@ def download():
 
     cookie_file = get_cookie_path()
 
-    # Base yt-dlp configuration
+    # Base yt-dlp options
     ydl_opts = {
         'outtmpl': output_template,
         'noplaylist': True,
         'cachedir': False,
+        'check_formats': False,  # Bypasses strict format existence verification
         'extractor_args': {
             'youtube': {
-                'player_client': ['android', 'ios', 'web'],
+                'player_client': ['android', 'ios', 'mweb', 'web_creator'],
                 'skip': ['hls', 'dash']
             }
         }
     }
 
-    # Attach cookies if found
+    # Attach cookies if found on Render
     if cookie_file:
         ydl_opts['cookiefile'] = cookie_file
 
-    # Flexible format fallbacks to prevent "Requested format is not available"
+    # Flexible format selection
     if download_type == 'audio':
-        ydl_opts['format'] = 'ba/bestaudio/b/best'
-    else:
-        ydl_opts['format'] = 'bv*+ba/b/best'
+        ydl_opts['format'] = 'bestaudio/best'
+    # Omit explicit 'format' key for video so yt-dlp automatically grabs whatever YouTube delivers
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -86,7 +86,7 @@ def download():
 
         actual_file_name = os.path.basename(filename)
 
-        # Safely URL encode the filename (encodes #, spaces, special chars)
+        # Safely URL encode the filename
         encoded_filename = quote(actual_file_name)
 
         return jsonify({
