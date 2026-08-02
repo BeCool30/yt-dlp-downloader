@@ -2,29 +2,60 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Downloader</title>
+    <!-- Viewport restriction to prevent mobile zooming -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Insta Downloader</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Hides horizontal and vertical overflow (X and Z axis bleeding) */
+            touch-action: pan-x pan-y; /* Prevents touch pinch zooming */
+        }
+
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
         }
+
         .card {
             background: #ffffff;
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            width: 100%;
+            width: 90%;
             max-width: 450px;
+            position: relative;
+            z-index: 1; /* Cleans up standard z-index stacking */
         }
-        h2 { margin-top: 0; color: #333; text-align: center; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+
+        h2 { 
+            margin-top: 0; 
+            color: #333; 
+            text-align: center; 
+        }
+
+        .form-group { 
+            margin-bottom: 15px; 
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold; 
+            color: #555; 
+        }
+
         input[type="text"], select {
             width: 100%;
             padding: 10px;
@@ -32,6 +63,7 @@
             border-radius: 6px;
             box-sizing: border-box;
         }
+
         button {
             width: 100%;
             padding: 12px;
@@ -43,9 +75,23 @@
             font-weight: bold;
             cursor: pointer;
         }
-        button:hover { background-color: #cc0000; }
-        button:disabled { background-color: #aa9999; cursor: not-allowed; }
-        .message { margin-top: 15px; text-align: center; font-weight: bold; min-height: 20px; }
+
+        button:hover { 
+            background-color: #cc0000; 
+        }
+
+        button:disabled { 
+            background-color: #aa9999; 
+            cursor: not-allowed; 
+        }
+
+        .message { 
+            margin-top: 15px; 
+            text-align: center; 
+            font-weight: bold; 
+            min-height: 20px; 
+        }
+
         .success { color: green; }
         .error { color: red; }
         .info { color: #0056b3; }
@@ -54,7 +100,7 @@
 <body>
 
 <div class="card">
-    <h2>Insta Media Downloader</h2>
+    <h2>Insta Downloader</h2>
     <form id="downloadForm">
         <div class="form-group">
             <label for="url">Video Link:</label>
@@ -74,6 +120,30 @@
 </div>
 
 <script>
+// Prevent Zooming Script
+document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0' || e.code === 'NumpadAdd' || e.code === 'NumpadSubtract')) {
+        e.preventDefault();
+    }
+});
+
+document.addEventListener('wheel', function (e) {
+    if (e.ctrlKey) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+});
+
+document.addEventListener('touchstart', function (e) {
+    if (e.touches.length > 1) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+// Existing Form Submission Script
 document.getElementById('downloadForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
