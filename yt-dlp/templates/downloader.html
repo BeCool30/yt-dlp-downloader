@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Viewport restriction to prevent mobile zooming -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Insta Downloader</title>
+    <title>Media Downloader</title>
     <style>
         * {
             box-sizing: border-box;
@@ -15,53 +14,110 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden; /* Hides horizontal and vertical overflow (X and Z axis bleeding) */
-            touch-action: pan-x pan-y; /* Prevents touch pinch zooming */
+            overflow: hidden;
+            touch-action: pan-x pan-y;
         }
 
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
             display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Top Header Navigation Bar */
+        header {
+            width: 100%;
+            background: #ffffff;
+            padding: 18px 6%;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
         }
 
+        .header-title {
+            font-size: 26px;
+            font-weight: bold;
+            color: #2563eb;
+            margin: 0;
+        }
+
+        /* Main Wrapper for Centering the Form */
+        .main-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+        }
+
+        /* Card Container */
         .card {
             background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            width: 90%;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
             max-width: 450px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
             position: relative;
-            z-index: 1; /* Cleans up standard z-index stacking */
+            z-index: 1;
         }
 
-        h2 { 
-            margin-top: 0; 
-            color: #333; 
-            text-align: center; 
+        /* Unique Styled Form Banner/Header */
+        .card-header {
+            background: linear-gradient(135deg, #2563eb, #6d28d9);
+            color: #ffffff;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .card-header p {
+            margin: 6px 0 0;
+            font-size: 13px;
+            opacity: 0.85;
+        }
+
+        /* Form Content Area */
+        .card-body {
+            padding: 25px 30px 30px;
         }
 
         .form-group { 
-            margin-bottom: 15px; 
+            margin-bottom: 18px; 
         }
 
         label { 
             display: block; 
-            margin-bottom: 5px; 
+            margin-bottom: 8px; 
             font-weight: bold; 
-            color: #555; 
+            color: #475569; 
+            font-size: 14px;
         }
 
         input[type="text"], select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
             box-sizing: border-box;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: #2563eb;
         }
 
         button {
@@ -70,10 +126,11 @@
             background-color: #ff0000;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            transition: background-color 0.2s ease;
         }
 
         button:hover { 
@@ -90,6 +147,7 @@
             text-align: center; 
             font-weight: bold; 
             min-height: 20px; 
+            font-size: 14px;
         }
 
         .success { color: green; }
@@ -99,24 +157,39 @@
 </head>
 <body>
 
-<div class="card">
-    <h2>Insta Downloader</h2>
-    <form id="downloadForm">
-        <div class="form-group">
-            <label for="url">Video Link:</label>
-            <input type="text" id="url" name="url" placeholder="Paste YouTube link here..." required>
-        </div>
-        <div class="form-group">
-            <label for="type">Download Type:</label>
-            <select id="type" name="type">
-                <option value="video">Video (Best Quality)</option>
-                <option value="audio">Audio Only (Best Audio)</option>
-            </select>
-        </div>
-        <button type="submit" id="submitBtn">Download</button>
-    </form>
+<!-- Top Header Navigation -->
+<header>
+    <h1 class="header-title">Media Downloader</h1>
+</header>
 
-    <div id="statusMessage" class="message"></div>
+<!-- Centered Content -->
+<div class="main-container">
+    <div class="card">
+        <!-- Unique Form Block Banner -->
+        <div class="card-header">
+            <h3>⚡ Quick Video Saver</h3>
+            <p>Convert and download high quality audio & video instantly</p>
+        </div>
+
+        <div class="card-body">
+            <form id="downloadForm">
+                <div class="form-group">
+                    <label for="url">Video Link:</label>
+                    <input type="text" id="url" name="url" placeholder="Paste YouTube link here..." required>
+                </div>
+                <div class="form-group">
+                    <label for="type">Download Type:</label>
+                    <select id="type" name="type">
+                        <option value="video">Video (Best Quality)</option>
+                        <option value="audio">Audio Only (Best Audio)</option>
+                    </select>
+                </div>
+                <button type="submit" id="submitBtn">Download</button>
+            </form>
+
+            <div id="statusMessage" class="message"></div>
+        </div>
+    </div>
 </div>
 
 <script>
